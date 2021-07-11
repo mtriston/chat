@@ -19,7 +19,12 @@ public class Client {
     private volatile boolean CONTINUE = true;
 
     public void start(String ip, int port) throws IOException, InterruptedException {
-        clientSocket = new Socket(ip, port);
+        try {
+            clientSocket = new Socket(ip, port);
+        } catch (Exception e) {
+            System.err.println("Failed to connect to server");
+            System.exit(0);
+        }
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -59,7 +64,6 @@ public class Client {
             if (scanner.hasNext()) {
                 String message = scanner.nextLine();
                 if (message.equalsIgnoreCase("exit")) {
-                    stopConnection();
                     CONTINUE = false;
                     System.exit(0);
                 }
