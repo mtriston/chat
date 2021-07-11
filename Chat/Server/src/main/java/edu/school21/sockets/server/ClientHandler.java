@@ -38,11 +38,10 @@ public class ClientHandler implements Runnable {
                 return;
             }
             List<Message> messages = server.getRoomHistory(room.getName());
-            for (int i = messages.size() - 1; i >= 0; --i) {
-                if (messages.size() - i > 29)
-                    break;
-                sendMessage(messages.get(i).getText());
-            }
+            if (messages.size() > 30)
+                messages = messages.subList(messages.size() - 30, messages.size());
+            messages.forEach(m -> sendMessage(m.getText()));
+
             sendMessage("Start messaging");
             JSONMessage jsonMessage;
             server.sendMessageToAllClients(String.format("server: client %s just arrived", username), this);
