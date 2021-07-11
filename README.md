@@ -17,15 +17,27 @@
   * Общение происходит в рамках одной комнаты
   * Сообщения передаются в JSON формате.
 
+## База данных
+Для работы требуется `PosgreSQL`.  
+username/password необходимо указать `resources/db.propreties`.  
+При первом запуске сервера будет создана необходимая схема с именем `chat`.  
+Структура таблиц:
+
+![Screenshot from 2021-07-11 23-26-41](https://user-images.githubusercontent.com/52173536/125209319-96591f80-e2a0-11eb-93f1-f8af1b4847c3.png)
+
 ## Как использовать
-### сервер
+В папке программы (Server/Client)
 ```bash
-cd Chat/Server
+mvn install exec:java
+```
+либо
+### Server
+```bash
 mvn
 java -jar target/socket-server.jar --port=8081
 ```
-### клиент
+### Client
 ```bash
-cd Chat/Сlient
 mvn
 java -jar target/socket-client.jar --port=8081
+```
