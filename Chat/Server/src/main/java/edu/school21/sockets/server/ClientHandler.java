@@ -144,6 +144,8 @@ public class ClientHandler implements Runnable {
                 }
                 if (cmd == i[0])
                     return false;
+                if (cmd < 0 || cmd > server.getRooms().size())
+                    continue;
                 room = server.getRooms().get(cmd - 1);
                 return true;
             }
