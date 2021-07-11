@@ -44,13 +44,15 @@ public class ClientHandler implements Runnable {
                 sendMessage(messages.get(i).getText());
             }
             sendMessage("Start messaging");
+            JSONMessage jsonMessage;
+            server.sendMessageToAllClients(String.format("server: client %s just arrived", username), this);
             while (true) {
                 String message = in.readLine();
                 if (message == null) {
                     server.removeClient(this);
                     break;
                 }
-                JSONMessage jsonMessage = gson.fromJson(message, JSONMessage.class);
+                jsonMessage = gson.fromJson(message, JSONMessage.class);
                 if (jsonMessage.message.equalsIgnoreCase("exit")) {
                     server.removeClient(this);
                     break;

@@ -53,7 +53,7 @@ public class Server {
     public void sendMessageToAllClients(String msg, ClientHandler sender) {
         messageService.saveMessage(msg, sender.getUsername(), sender.getRoom());
         for (ClientHandler o : clients) {
-            if (o.getRoom().equals(sender.getRoom()) && o != sender) {
+            if (o.getRoom() != null && o.getRoom().equals(sender.getRoom()) && o != sender) {
                 o.sendMessage(msg);
             }
         }
@@ -83,6 +83,7 @@ public class Server {
     }
 
     public void removeClient(ClientHandler clientHandler) {
+        sendMessageToAllClients(String.format("server: client %s just left", clientHandler.getUsername()), clientHandler);
         try {
             clientHandler.disconnect();
         } catch (IOException e) {
