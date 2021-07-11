@@ -14,8 +14,8 @@ CREATE TABLE if NOT EXISTS chat.rooms (
 
 CREATE TABLE IF NOT EXISTS chat.messages (
     id SERIAL PRIMARY KEY,
-    author INT REFERENCES chat.users(id),
+    sender INT REFERENCES chat.users(id),
     room INT REFERENCES chat.rooms(id),
     text TEXT,
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
