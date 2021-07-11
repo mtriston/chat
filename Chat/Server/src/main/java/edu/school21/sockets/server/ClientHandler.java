@@ -48,11 +48,13 @@ public class ClientHandler implements Runnable {
             while (true) {
                 String message = in.readLine();
                 if (message == null) {
+                    server.sendMessageToAllClients(String.format("server: client %s just left", username), this);
                     server.removeClient(this);
                     break;
                 }
                 jsonMessage = gson.fromJson(message, JSONMessage.class);
                 if (jsonMessage.message.equalsIgnoreCase("exit")) {
+                    server.sendMessageToAllClients(String.format("server: client %s just left", username), this);
                     server.removeClient(this);
                     break;
                 }
@@ -158,6 +160,8 @@ public class ClientHandler implements Runnable {
 
     private String getMessage() throws IOException {
         String json = in.readLine();
+        if (json == null)
+            return "null";
         return gson.fromJson(json, JSONMessage.class).message;
     }
 
@@ -166,6 +170,8 @@ public class ClientHandler implements Runnable {
     }
 
     public String getRoom() {
+        if (room == null)
+            return null;
         return room.getName();
     }
 

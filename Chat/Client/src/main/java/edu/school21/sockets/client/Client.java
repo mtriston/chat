@@ -56,8 +56,15 @@ public class Client {
 
     public void sendMessage() throws IOException {
         while (CONTINUE) {
-            if (scanner.hasNext())
-                out.println(gson.toJson(new JSONMessage(scanner.nextLine(), "null", "null")));
+            if (scanner.hasNext()) {
+                String message = scanner.nextLine();
+                if (message.equalsIgnoreCase("exit")) {
+                    stopConnection();
+                    CONTINUE = false;
+                    System.exit(0);
+                }
+                out.println(gson.toJson(new JSONMessage(message, "null", "null")));
+            }
         }
     }
 

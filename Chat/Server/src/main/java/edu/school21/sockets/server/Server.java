@@ -83,7 +83,6 @@ public class Server {
     }
 
     public void removeClient(ClientHandler clientHandler) {
-        sendMessageToAllClients(String.format("server: client %s just left", clientHandler.getUsername()), clientHandler);
         try {
             clientHandler.disconnect();
         } catch (IOException e) {
