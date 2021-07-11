@@ -47,7 +47,7 @@ public class Client {
             String msg = in.readLine();
             if (msg == null) {
                 CONTINUE = false;
-                break;
+                System.exit(500);
             }
             JSONMessage message = gson.fromJson(msg, JSONMessage.class);
             System.out.println(message.message);
