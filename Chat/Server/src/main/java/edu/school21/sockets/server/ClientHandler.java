@@ -55,6 +55,7 @@ public class ClientHandler implements Runnable {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             server.removeClient(this);
         }
     }
@@ -72,8 +73,6 @@ public class ClientHandler implements Runnable {
             } catch (NumberFormatException ignored) {
                 continue;
             }
-            if (cmd <= 0 || cmd > 3)
-                continue;
             if (cmd == 3)
                 return false;
             sendMessage("Enter username:");
@@ -96,11 +95,16 @@ public class ClientHandler implements Runnable {
 
     private boolean chooseRoom() throws IOException {
         while (true) {
+            int cmd;
             sendMessage("1. Create room");
             sendMessage("2. Choose room");
             sendMessage("3. Exit");
             sendMessage("Choose an option:");
-            int cmd = Integer.parseInt(getMessage());
+            try {
+                cmd = Integer.parseInt(getMessage());
+            } catch (NumberFormatException ignored) {
+                continue;
+            }
             if (cmd == 3)
                 return false;
             if (cmd == 1) {
@@ -121,7 +125,11 @@ public class ClientHandler implements Runnable {
                 final int[] i = {1};
                 server.getRooms().forEach(r -> sendMessage(i[0]++ + ". " + r.getName()));
                 sendMessage(i[0] + ". Exit");
-                cmd = Integer.parseInt(getMessage());
+                try {
+                    cmd = Integer.parseInt(getMessage());
+                } catch (NumberFormatException ignored) {
+                    continue;
+                }
                 if (cmd == i[0])
                     return false;
                 room = server.getRooms().get(cmd - 1);

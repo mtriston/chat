@@ -85,7 +85,8 @@ public class Server {
     public void removeClient(ClientHandler clientHandler) {
         try {
             clientHandler.disconnect();
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         clients.remove(clientHandler);
     }
