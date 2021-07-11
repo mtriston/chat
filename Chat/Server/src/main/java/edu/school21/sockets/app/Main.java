@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        if (args.length != 1 || args[0].matches("--port=[0-9]")) {
+        if (args.length != 1 || args[0].matches("--port=[0-9]") || args[0].length() < "--port=".length()) {
             System.err.println("Invalid argument! Expected --port=8081");
             System.exit(-1);
         }
