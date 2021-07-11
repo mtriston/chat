@@ -19,7 +19,7 @@
 
 ## База данных
 Для работы требуется `PosgreSQL`.  
-username/password необходимо указать `resources/db.propreties`.  
+username/password необходимо указать `resources/db.properties`.  
 При первом запуске сервера будет создана необходимая схема с именем `chat`.  
 Структура таблиц:
 
