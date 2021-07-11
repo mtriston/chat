@@ -33,6 +33,4 @@ public class RoomsServiceImpl implements RoomsService {
     public List<Room> getAllRooms() {
         return roomsRepository.findAll();
     }
-
-
 }

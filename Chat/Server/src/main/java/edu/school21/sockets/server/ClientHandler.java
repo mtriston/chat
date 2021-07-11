@@ -61,56 +61,73 @@ public class ClientHandler implements Runnable {
 
     private boolean logIn() throws IOException {
         sendMessage("Hello from Server!");
-        sendMessage("1. signIn");
-        sendMessage("2. SignUp");
-        sendMessage("3. Exit");
-        sendMessage("Choose an option:");
-        int cmd = Integer.parseInt(getMessage());
-        if (cmd == 3)
-            return false;
-        sendMessage("Enter username:");
-        username = getMessage();
-        sendMessage("Enter password:");
-        String password = getMessage();
-        if (cmd == 1) {
-            if (server.signIn(username, password))
-                return true;
-            else
-                sendMessage("Incorrect login or password.");
-        } else if (cmd == 2) {
-            if (server.signUp(username, password))
-                return true;
-            else
-                sendMessage("This username already exists.");
+        int cmd;
+        while (true) {
+            sendMessage("1. signIn");
+            sendMessage("2. SignUp");
+            sendMessage("3. Exit");
+            sendMessage("Choose an option:");
+            try {
+                cmd = Integer.parseInt(getMessage());
+            } catch (NumberFormatException ignored) {
+                continue;
+            }
+            if (cmd <= 0 || cmd > 3)
+                continue;
+            if (cmd == 3)
+                return false;
+            sendMessage("Enter username:");
+            username = getMessage();
+            sendMessage("Enter password:");
+            String password = getMessage();
+            if (cmd == 1) {
+                if (server.signIn(username, password))
+                    return true;
+                else
+                    sendMessage("Incorrect login or password.");
+            } else if (cmd == 2) {
+                if (server.signUp(username, password))
+                    return true;
+                else
+                    sendMessage("This username already exists.");
+            }
         }
-        return false;
     }
 
     private boolean chooseRoom() throws IOException {
-        sendMessage("1. Create room");
-        sendMessage("2. Choose room");
-        sendMessage("3. Exit");
-        sendMessage("Choose an option:");
-        int cmd = Integer.parseInt(getMessage());
-        if (cmd == 3)
-            return false;
-        if (cmd == 1) {
-            sendMessage("Enter room name");
-            String roomName = getMessage();
-            room = server.addRoom(roomName, username);
-            return true;
-        } else if (cmd == 2) {
-            sendMessage("Rooms:");
-            final int[] i = {1};
-            server.getRooms().forEach(r -> sendMessage(i[0]++ + ". " + r.getName()));
-            sendMessage(i[0] + ". Exit");
-            cmd = Integer.parseInt(getMessage());
-            if (cmd == server.getRooms().size() + 1)
+        while (true) {
+            sendMessage("1. Create room");
+            sendMessage("2. Choose room");
+            sendMessage("3. Exit");
+            sendMessage("Choose an option:");
+            int cmd = Integer.parseInt(getMessage());
+            if (cmd == 3)
                 return false;
-            room = server.getRooms().get(cmd - 1);
-            return true;
+            if (cmd == 1) {
+                sendMessage("Enter room name:");
+                String roomName = getMessage();
+                if (!server.isRoomNameUnique(roomName)) {
+                    sendMessage("This room name already exists.");
+                    continue;
+                }
+                room = server.addRoom(roomName, username);
+                return true;
+            } else if (cmd == 2) {
+                if (server.getRooms().size() == 0) {
+                    sendMessage("No rooms! Try to create one.");
+                    continue;
+                }
+                sendMessage("Rooms:");
+                final int[] i = {1};
+                server.getRooms().forEach(r -> sendMessage(i[0]++ + ". " + r.getName()));
+                sendMessage(i[0] + ". Exit");
+                cmd = Integer.parseInt(getMessage());
+                if (cmd == i[0])
+                    return false;
+                room = server.getRooms().get(cmd - 1);
+                return true;
+            }
         }
-        return false;
     }
 
     public void sendMessage(String msg) {

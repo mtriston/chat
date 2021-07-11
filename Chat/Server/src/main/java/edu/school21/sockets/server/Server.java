@@ -78,6 +78,10 @@ public class Server {
         return room;
     }
 
+    public boolean isRoomNameUnique(String name) {
+        return !roomsService.getRoomByName(name).isPresent();
+    }
+
     public void removeClient(ClientHandler clientHandler) {
         try {
             clientHandler.disconnect();
