@@ -61,9 +61,10 @@ public class ClientHandler implements Runnable {
 
     private boolean logIn() throws IOException {
         sendMessage("Hello from Server!");
-        sendMessage("signIn");
-        sendMessage("SignUp");
-        sendMessage("Exit");
+        sendMessage("1. signIn");
+        sendMessage("2. SignUp");
+        sendMessage("3. Exit");
+        sendMessage("Choose an option:");
         int cmd = Integer.parseInt(getMessage());
         if (cmd == 3)
             return false;
@@ -86,9 +87,10 @@ public class ClientHandler implements Runnable {
     }
 
     private boolean chooseRoom() throws IOException {
-        sendMessage("Create room");
-        sendMessage("Choose room");
-        sendMessage("Exit");
+        sendMessage("1. Create room");
+        sendMessage("2. Choose room");
+        sendMessage("3. Exit");
+        sendMessage("Choose an option:");
         int cmd = Integer.parseInt(getMessage());
         if (cmd == 3)
             return false;
@@ -99,8 +101,9 @@ public class ClientHandler implements Runnable {
             return true;
         } else if (cmd == 2) {
             sendMessage("Rooms:");
-            server.getRooms().forEach(r -> sendMessage(r.getName()));
-            sendMessage("Exit");
+            final int[] i = {1};
+            server.getRooms().forEach(r -> sendMessage(i[0]++ + ". " + r.getName()));
+            sendMessage(i[0] + ". Exit");
             cmd = Integer.parseInt(getMessage());
             if (cmd == server.getRooms().size() + 1)
                 return false;
