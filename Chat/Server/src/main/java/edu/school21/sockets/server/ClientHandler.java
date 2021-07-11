@@ -46,17 +46,27 @@ public class ClientHandler implements Runnable {
             sendMessage("Start messaging");
             while (true) {
                 String message = in.readLine();
-                if (message.equalsIgnoreCase("exit")) {
+                if (message == null) {
                     server.removeClient(this);
                     break;
                 }
                 JSONMessage jsonMessage = gson.fromJson(message, JSONMessage.class);
+                if (jsonMessage.message.equalsIgnoreCase("exit")) {
+                    server.removeClient(this);
+                    break;
+                }
                 server.sendMessageToAllClients(username + ": " + jsonMessage.message, this);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             server.removeClient(this);
+        } finally {
+            try {
+                disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
