@@ -13,7 +13,7 @@ public class Main {
         Server server = new Server();
         try {
             server.start(Integer.parseInt(args[0].substring("--port=".length())));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
