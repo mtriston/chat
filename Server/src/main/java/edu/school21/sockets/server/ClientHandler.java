@@ -13,6 +13,12 @@ import java.net.Socket;
 import java.util.List;
 
 public class ClientHandler implements Runnable {
+    public static final String DELIMITER = "------------------";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+
     private final Gson gson;
     private final Server server;
     private final Socket clientSocket;
@@ -42,19 +48,19 @@ public class ClientHandler implements Runnable {
                 messages = messages.subList(messages.size() - 30, messages.size());
             messages.forEach(m -> sendMessage(m.getText()));
 
-            sendMessage("Start messaging");
+            sendMessage(ANSI_GREEN + "Start messaging" + ANSI_RESET);
             JSONMessage jsonMessage;
-            server.sendMessageToAllClients(String.format("server: client %s just arrived", username), this);
+            server.sendMessageToAllClients(String.format("%sserver: client %s just arrived%s", ANSI_GREEN, username, ANSI_RESET), this);
             while (true) {
                 String message = in.readLine();
                 if (message == null) {
-                    server.sendMessageToAllClients(String.format("server: client %s just left", username), this);
+                    server.sendMessageToAllClients(String.format("%sserver: client %s just left%s", ANSI_YELLOW, username, ANSI_RESET), this);
                     server.removeClient(this);
                     break;
                 }
                 jsonMessage = gson.fromJson(message, JSONMessage.class);
                 if (jsonMessage.message.equalsIgnoreCase("exit")) {
-                    server.sendMessageToAllClients(String.format("server: client %s just left", username), this);
+                    server.sendMessageToAllClients(String.format("%sserver: client %s just left%s", ANSI_YELLOW, username, ANSI_RESET), this);
                     server.removeClient(this);
                     break;
                 }
@@ -77,31 +83,42 @@ public class ClientHandler implements Runnable {
         sendMessage("Hello from Server!");
         int cmd;
         while (true) {
+            sendMessage(DELIMITER);
             sendMessage("1. signIn");
             sendMessage("2. SignUp");
             sendMessage("3. Exit");
             sendMessage("Choose an option:");
+            sendMessage(DELIMITER);
             try {
                 cmd = Integer.parseInt(getMessage());
             } catch (NumberFormatException ignored) {
+                sendMessage(ANSI_RED + "Invalid option" + ANSI_RESET);
                 continue;
             }
             if (cmd == 3)
                 return false;
+            if (cmd < 1 || cmd > 3) {
+                sendMessage(ANSI_RED + "Invalid option" + ANSI_RESET);
+                continue;
+            }
             sendMessage("Enter username:");
             username = getMessage();
             sendMessage("Enter password:");
             String password = getMessage();
             if (cmd == 1) {
-                if (server.signIn(username, password))
+                if (server.signIn(username, password)) {
+                    sendMessage(ANSI_GREEN + "You have successfully signed in" + ANSI_RESET);
                     return true;
+                }
                 else
-                    sendMessage("Incorrect login or password.");
+                    sendMessage(ANSI_RED + "Incorrect login or password." + ANSI_RESET);
             } else if (cmd == 2) {
-                if (server.signUp(username, password))
+                if (server.signUp(username, password)) {
+                    sendMessage(ANSI_GREEN + "You have successfully signed up and signed in" + ANSI_RESET);
                     return true;
+                }
                 else
-                    sendMessage("This username already exists.");
+                    sendMessage(ANSI_RED +"This username already exists." + ANSI_RESET);
             }
         }
     }
@@ -109,44 +126,57 @@ public class ClientHandler implements Runnable {
     private boolean chooseRoom() throws IOException {
         while (true) {
             int cmd;
+            sendMessage(DELIMITER);
             sendMessage("1. Create room");
             sendMessage("2. Choose room");
             sendMessage("3. Exit");
             sendMessage("Choose an option:");
+            sendMessage(DELIMITER);
             try {
                 cmd = Integer.parseInt(getMessage());
             } catch (NumberFormatException ignored) {
+                sendMessage(ANSI_RED + "Invalid option" + ANSI_RESET);
                 continue;
             }
             if (cmd == 3)
                 return false;
+            if (cmd < 1 || cmd > 3) {
+                sendMessage(ANSI_RED + "Invalid option" + ANSI_RESET);
+                continue;
+            }
             if (cmd == 1) {
                 sendMessage("Enter room name:");
                 String roomName = getMessage();
                 if (!server.isRoomNameUnique(roomName)) {
-                    sendMessage("This room name already exists.");
+                    sendMessage(ANSI_RED + "This room name already exists." + ANSI_RESET);
                     continue;
                 }
                 room = server.addRoom(roomName, username);
                 return true;
             } else if (cmd == 2) {
                 if (server.getRooms().size() == 0) {
-                    sendMessage("No rooms! Try to create one.");
+                    sendMessage(ANSI_RED + "No rooms! Try to create one." + ANSI_RESET);
                     continue;
                 }
+                sendMessage(DELIMITER);
                 sendMessage("Rooms:");
                 final int[] i = {1};
                 server.getRooms().forEach(r -> sendMessage(i[0]++ + ". " + r.getName()));
-                sendMessage(i[0] + ". Exit");
+                sendMessage(i[0] + ". Exit\n");
+                sendMessage("Choose an option:");
+                sendMessage(DELIMITER);
                 try {
                     cmd = Integer.parseInt(getMessage());
                 } catch (NumberFormatException ignored) {
+                    sendMessage(ANSI_RED + "Invalid option" + ANSI_RESET);
                     continue;
                 }
                 if (cmd == i[0])
                     return false;
-                if (cmd < 0 || cmd > server.getRooms().size())
+                if (cmd < 0 || cmd > server.getRooms().size()) {
+                    sendMessage(ANSI_RED + "Invalid option" + ANSI_RESET);
                     continue;
+                }
                 room = server.getRooms().get(cmd - 1);
                 return true;
             }
